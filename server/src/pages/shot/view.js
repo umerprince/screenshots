@@ -82,7 +82,9 @@ class Clip extends React.Component {
     if (this.props.clip.image.text) {
       return (
         <menu type="context" id="clip-image-context">
-          <menuitem label="Copy Image Text" onClick={this.copyImageText.bind(this)} ></menuitem>
+          <Localized id="shotPageCopyImageText">
+            <menuitem label="Copy Image Text" onClick={this.copyImageText.bind(this)} ></menuitem>
+          </Localized>
         </menu>
       );
     }
@@ -252,9 +254,13 @@ class Body extends React.Component {
     if (this.props.isOwner) {
       restoreWidget = (
         <p>
-          If you do nothing,
-          this shot will be permanently deleted in <TimeDiff date={deleteTime} />.
-          <button className="button primary" onClick={this.onRestore.bind(this)}>restore for {intervalDescription(this.props.defaultExpiration)}</button>
+          <Localized id="shotPageExpirationMessage">/* todo - how do we handle the timediffs? */
+            If you do nothing,
+            this shot will be permanently deleted in <TimeDiff date={deleteTime} />.
+          </Localized>
+          <Localized id="shotPageRestoreButton"> /* todo l10n: how do we handle the time interval? "restore for N days" */
+            <button className="button primary" onClick={this.onRestore.bind(this)}>restore for {intervalDescription(this.props.defaultExpiration)}</button>
+          </Localized>
         </p>
       );
     }
@@ -306,11 +312,13 @@ class Body extends React.Component {
 
     let trashOrFlagButton;
     if (this.props.isOwner) {
-      trashOrFlagButton = <button className="button transparent trash" title="Delete this shot permanently" onClick={ this.onClickDelete.bind(this) }>
-      </button>;
+      trashOrFlagButton = <Localized id="shotPageDeleteButton">
+        <button className="button transparent trash" title="Delete this shot permanently" onClick={ this.onClickDelete.bind(this) }></button>
+      </Localized>;
     } else {
-      trashOrFlagButton = <button className="button transparent flag" title="Report this shot for abuse, spam, or other problems" onClick={ this.onClickFlag.bind(this) }>
-      </button>;
+      trashOrFlagButton = <Localized id="shotPageAbuseButton">
+        <button className="button transparent flag" title="Report this shot for abuse, spam, or other problems" onClick={ this.onClickFlag.bind(this) }></button>
+      </Localized>;
     }
 
     let myShotsHref = "/shots";
@@ -358,18 +366,22 @@ class Body extends React.Component {
               <EditableTitle title={shot.title} isOwner={this.props.isOwner} />
               <div className="shot-subtitle"> { favicon }
                 { linkTextShort ? <a className="subtitle-link" href={ shotRedirectUrl } onClick={ this.onClickOrigUrl.bind(this, "navbar") }>{ linkTextShort }</a> : null }
-                <span className="time-diff">{ timeDiff }</span> { expiresDiff }
+                <span className="time-diff">{ timeDiff }</span> { expiresDiff } /* todo l10n - figure out how to localize timeDiffs */
               </div>
             </div>
           </div>
           <div className="shot-alt-actions">
             { trashOrFlagButton }
             <ShareButton abTests={this.props.abTests} clipUrl={clipUrl} shot={shot} isOwner={this.props.isOwner} staticLink={this.props.staticLink} renderExtensionNotification={renderExtensionNotification} isExtInstalled={this.props.isExtInstalled} />
-            <a className="button primary" href={ this.props.downloadUrl } onClick={ this.onClickDownload.bind(this) }
-              title="Download the shot image">
-              <img src={ this.props.staticLink("/static/img/download-white.svg") } width="20" height="20"/>&nbsp;
-              <span className="download-text">Download</span>
-            </a>
+            <Localized id="shotPageDownloadShot">
+              <a className="button primary" href={ this.props.downloadUrl } onClick={ this.onClickDownload.bind(this) }
+                title="Download the shot image">
+                <img src={ this.props.staticLink("/static/img/download-white.svg") } width="20" height="20"/>&nbsp;
+                <Localized id="shotPageDownload">
+                  <span className="download-text">Download</span>
+                </Localized>
+              </a>
+            </Localized>
           </div>
         </div>
         { clips }
@@ -452,6 +464,7 @@ class ExpireWidget extends React.Component {
     let day = hour * 24;
     return (
       <span className="keep-for-form">
+        /* todo l10n - this entire section */
         &bull; keep for: <select ref="expireTime">
           <option value="cancel">Select time</option>
           <option value="0">Indefinitely</option>
@@ -477,6 +490,8 @@ class ExpireWidget extends React.Component {
       if (this.props.expireTime < Date.now()) {
         desc = "expired";
       }
+
+       // todo l10n: we need to csontruct this differently
       button = <span>
         {desc} <TimeDiff date={this.props.expireTime} simple={this.props.simple} />
       </span>;

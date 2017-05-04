@@ -1,6 +1,7 @@
 const config = require("./config").getProperties();
 require("./logging").installConsoleHandler();
 const mozlog = require("./logging").mozlog("server");
+const accepts = require("accepts");
 const path = require('path');
 const { readFileSync, existsSync } = require('fs');
 const Cookies = require("cookies");
@@ -42,6 +43,7 @@ const { captureRavenException, sendRavenMessage,
 const { errorResponse, simpleResponse, jsResponse } = require("./responses");
 const selfPackage = require("./package.json");
 const { b64EncodeJson, b64DecodeJson } = require("./b64");
+const l10n = require("./l10n");
 
 const PROXY_HEADER_WHITELIST = {
   "content-type": true,
@@ -265,6 +267,16 @@ app.use(function(req, res, next) {
   linker.imageLinkWithHost = linker.imageLink.bind(null, base);
   next();
 });
+
+// Make localized strings available to non-view code via req.getText
+app.use(function(req, res, next) {
+  console.log('about to init l10n');
+  const languages = accepts(req.header("Accept-Language")).languages;
+  l10n.init(languages);
+  req.getText = l10n.getText;
+  console.log('done initing l10n');
+});
+
 
 app.param("id", function(req, res, next, id) {
   if (/^[a-zA-Z0-9]{16}$/.test(id)) {

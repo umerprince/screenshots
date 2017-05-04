@@ -6,6 +6,8 @@ const React = require("react");
 const ReactDOM = require("react-dom");
 const { ShareButton } = require("../../share-buttons");
 const Masonry = require("react-masonry-component");
+const { Localized } = require("fluent-react/compat");
+// TODO: how do we pass l10n from the req into the Head and Body component props?
 
 class Head extends React.Component {
 
@@ -79,9 +81,15 @@ class Body extends React.Component {
   renderNoShots() {
     return (
       <div className="no-shots" key="no-shots-found">
-        <img src={ this.props.staticLink("/static/img/image-noshots_screenshots.svg") } alt="no Shots found" width="432" height="432"/>
-        <p>No saved shots.</p>
-        <p>Go on, create some.</p>
+        <Localized id="gNoShots">
+          <img src={ this.props.staticLink("/static/img/image-noshots_screenshots.svg") } alt="no Shots found" width="432" height="432"/>
+        </Localized>
+        <Localized id="shotIndexPageNoShotsMessage">
+          <p>No saved shots.</p>
+        </Localized>
+        <Localized id="shotIndexPageNoShotsInvitation">
+          <p>Go on, create some.</p>
+        </Localized>
       </div>
     );
   }
@@ -89,8 +97,12 @@ class Body extends React.Component {
   renderNoDeviceId() {
     return (
       <div className="no-shots" key="no-shots-found">
-        <img src={ this.props.staticLink("/static/img/image-search_screenshots.svg") } alt="no Shots found" width="432" height="432"/>
-        <p>Looking for your shots...</p>
+        <Localized id="gNoShots">
+          <img src={ this.props.staticLink("/static/img/image-search_screenshots.svg") } alt="no Shots found" width="432" height="432"/>
+        </Localized>
+        <Localized id="shotIndexPageLookingForShots">
+          <p>Looking for your shots...</p>
+        </Localized>
       </div>
     );
   }
@@ -98,9 +110,15 @@ class Body extends React.Component {
   renderNoSearchResults() {
     return (
       <div className="no-shots" key="no-shots-found">
-        <img src={ this.props.staticLink("/static/img/image-search_screenshots.svg") } alt="no Shots found" width="432" height="432"/>
-        <p>Hmmm!</p>
-        <p>We can’t find any shots that match your search.</p>
+        <Localized id="gNoShots">
+          <img src={ this.props.staticLink("/static/img/image-search_screenshots.svg") } alt="no Shots found" width="432" height="432"/>
+        </Localized>
+        <Localized id="shotIndexPageNoSearchResultsIntro">
+          <p>Hmmm!</p>
+        </Localized>
+        <Localized id="shotIndexPageNoSearchResults">
+          <p>We can’t find any shots that match your search.</p>
+        </Localized>
       </div>
     );
   }
@@ -109,8 +127,12 @@ class Body extends React.Component {
     return (
       <form onSubmit={ this.onSubmitForm.bind(this) }>
         <span className="search-label" />
-        <input type="search" id="search" ref="search" maxLength="100" placeholder="search my shots" defaultValue={this.state.defaultSearch} onChange={this.onChangeSearch.bind(this)} />
-        <div className="clear-search" title="clear search" onClick={this.onClearSearch.bind(this)}></div>
+        <Localized id="shotIndexPageSearchPlaceholder">
+          <input type="search" id="search" ref="search" maxLength="100" placeholder="search my shots" defaultValue={this.state.defaultSearch} onChange={this.onChangeSearch.bind(this)} />
+        </Localized>
+        <Localized id="shotIndexPageClearSearchButton">
+          <div className="clear-search" title="clear search" onClick={this.onClearSearch.bind(this)}></div>
+        </Localized>
       </form>
     );
   }
@@ -211,10 +233,14 @@ class Card extends React.Component {
           </div>
         </a>
         <div className="alt-actions-container">
-          <a className="button transparent download" href={ downloadUrl } onClick={ this.onClickDownload.bind(this) }
-            title="Download the shot image" ref="download" />
+          <Localized id="shotPageDownloadShot">
+            <a className="button transparent download" href={ downloadUrl } onClick={ this.onClickDownload.bind(this) }
+              title="Download the shot image" ref="download" />
+          </Localized>
           <ShareButton setPanelState={this.setPanelState.bind(this)} abTests={this.props.abTests} clipUrl={shot.urlDisplay} shot={shot} isOwner={this.props.isOwner} staticLink={this.props.staticLink} isExtInstalled={this.props.isExtInstalled} />
-          <button className="button transparent trash" title="Delete this shot permanently" onClick={ this.onClickDelete.bind(this, shot) } ref="trash" />
+          <Localized id="shotPageDeleteButton">
+            <button className="button transparent trash" title="Delete this shot permanently" onClick={ this.onClickDelete.bind(this, shot) } ref="trash" />
+          </Localized>
         </div>
       </div>
     );
@@ -249,7 +275,7 @@ class Card extends React.Component {
 
   displayTitle(title) {
     if (title.length > 140) {
-      return (title.substring(0, 140) + "...");
+      return (title.substring(0, 140) + "..."); // todo l10n: is this the right way to truncate rtl languages?
     }
     return title;
   }
@@ -258,6 +284,7 @@ class Card extends React.Component {
     event.stopPropagation();
     event.preventDefault();
     sendEvent("start-delete", "my-shots", {useBeacon: true});
+    // l10n todo: how to localize the window.confirm text? maybe with a hidden element in the page?
     if (window.confirm(`Delete ${shot.title}?`)) {
       sendEvent("delete", "my-shots-popup-confirm", {useBeacon: true});
       controller.deleteShot(shot);
