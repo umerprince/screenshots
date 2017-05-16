@@ -1,0 +1,79 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+/* Only apply to browser.xul documents */
+@-moz-document url("chrome://browser/content/browser.xul") {
+  /*
+     XXX Copied from browser/themes/<platform>/browser.css. Should really be
+     changing the sizes of icons in files to 16px x 16px and no borders.
+   */
+  :-moz-any(toolbar, .widget-overflow-list) #loop-button > .toolbarbutton-icon,
+  :-moz-any(toolbar, .widget-overflow-list) #loop-button > :-moz-any(.toolbarbutton-menubutton-button, .toolbarbutton-badge-stack) > .toolbarbutton-icon {
+    max-width: 16px;
+    margin: 0;
+  }
+
+  #screenshots-button {
+    list-style-image: url(chrome://screenshots/skin/toolbar.png);
+  }
+
+  toolbar[brighttext] #screenshots-button {
+    list-style-image: url(chrome://screenshots/skin/toolbar-inverted.png);
+  }
+
+  /* FIXME: Hello's toolbar.png has multiple icons for each of these states,
+     the -moz-image-region selections one of them */
+  /*
+  #screenshots-button[state="disabled"],
+  #screenshots-button[disabled="true"] {
+    -moz-image-region: rect(0, 32px, 16px, 16px);
+  }
+
+  #screenshots-button:not([disabled="true"])[state="error"] {
+    -moz-image-region: rect(0, 48px, 16px, 32px);
+  }
+
+  #screenshots-button:not([disabled="true"])[state="action"] {
+    -moz-image-region: rect(0, 64px, 16px, 48px);
+  }
+
+  #screenshots-button:not([disabled="true"])[state="action"]:-moz-any(:hover,:hover:active,[open]) {
+    -moz-image-region: rect(0, 80px, 16px, 64px);
+  }
+
+  #screenshots-button:not([disabled="true"])[state="active"] {
+    -moz-image-region: rect(0, 96px, 16px, 80px);
+  }
+
+  #screenshots-button:not([disabled="true"])[state="active"]:-moz-any(:hover,:hover:active,[open]) {
+    -moz-image-region: rect(0, 112px, 16px, 96px);
+  }
+  */
+
+  /* The slideshow state disables the button for that window and makes it look
+     the same as the hover state to visually indicate that it's in-use.
+     */
+  #loop-button[state="slideshow"] {
+    background: var(--toolbarbutton-hover-background);
+    border-color: var(--toolbarbutton-hover-bordercolor);
+    box-shadow: var(--toolbarbutton-hover-boxshadow);
+  }
+
+  /* FIXME: Retina image... */
+  /*
+  @media (min-resolution: 1.1dppx) {
+    #screenshots-button {
+      list-style-image: url("chrome://screenshots/skin/toolbar@2x.png");
+      -moz-image-region: rect(0, 32px, 32px, 0);
+    }
+
+    toolbar[brighttext] #screenshots-button {
+      list-style-image: url("chrome://screenshots/skin/toolbar-inverted@2x.png");
+    }
+  }
+  */
+
+}

@@ -1,5 +1,5 @@
 /* globals AddonManager, Components, LegacyExtensionsUtils, Services,
-   XPCOMUtils */
+   XPCOMUtils, CustomizableUI */
 
 const OLD_ADDON_PREF_NAME = "extensions.jid1-NeEaf3sAHdKHPA@jetpack.deviceIdInfo";
 const OLD_ADDON_ID = "jid1-NeEaf3sAHdKHPA@jetpack";
@@ -8,8 +8,9 @@ const TELEMETRY_ENABLED_PREF = "datareporting.healthreport.uploadEnabled";
 const PREF_BRANCH = "extensions.screenshots.";
 const USER_DISABLE_PREF = "extensions.screenshots.disabled";
 const SYSTEM_DISABLE_PREF = "extensions.screenshots.system-disabled";
+const kNSXUL = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
 
-const { interfaces: Ci, utils: Cu } = Components;
+const { interfaces: Ci, utils: Cu, classes: Cc } = Components;
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "AddonManager",
                                   "resource://gre/modules/AddonManager.jsm");
@@ -19,6 +20,9 @@ XPCOMUtils.defineLazyModuleGetter(this, "Services",
                                   "resource://gre/modules/Services.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "LegacyExtensionsUtils",
                                   "resource://gre/modules/LegacyExtensionsUtils.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, "CustomizableUI",
+                                  "resource:///modules/CustomizableUI.jsm");
+
 
 let addonResourceURI;
 let appStartupDone;
@@ -52,6 +56,8 @@ function startup(data, reason) { // eslint-disable-line no-unused-vars
   addonResourceURI = data.resourceURI;
   // eslint-disable-next-line promise/catch-or-return
   appStartupPromise.then(handleStartup);
+  addStylesheets();
+  createButton();
 }
 
 function shutdown(data, reason) { // eslint-disable-line no-unused-vars
@@ -128,5 +134,49 @@ function handleMessage(msg, sender, sendReply) {
       sendReply({type: "success", value: !!addon});
     });
     return true;
+  }
+}
+
+function createButton() {
+  CustomizableUI.createWidget({
+    id: "screenshots-button",
+    type: "custom",
+    // label: "loop-call-button3.label",
+    // tooltiptext: "loop-call-button3.tooltiptext2",
+    // privateBrowsingTooltiptext: "loop-call-button3-pb.tooltiptext",
+    defaultArea: CustomizableUI.AREA_NAVBAR,
+    removable: true,
+    onBuild: (aDocument) => {
+      let node = aDocument.createElementNS(kNSXUL, "toolbarbutton");
+      node.setAttribute("id", this.id);
+      node.classList.add("toolbarbutton-1");
+      node.classList.add("chromeclass-toolbar-additional");
+      // FIXME: if we had it localized:
+      // node.setAttribute("label", CustomizableUI.getLocalizedProperty(this, "label"));
+      // let tooltiptext = CustomizableUI.getLocalizedProperty(this, "tooltiptext");
+      // FIXME: copy of contextMenuLabel :
+      let tooltiptext = "Take a Screenshot";
+      node.setAttribute("tooltiptext", tooltiptext);
+      node.setAttribute("removable", "true");
+      node.addEventListener("command", function(event) {
+        console.warn("is clicked");
+        // aDocument.defaultView.LoopUI.togglePanel(event);
+      });
+      return node;
+    }
+  });
+}
+
+function addStylesheets() {
+  // Load our stylesheets.
+  let styleSheetService = Cc["@mozilla.org/content/style-sheet-service;1"]
+    .getService(Components.interfaces.nsIStyleSheetService);
+  let sheets = [
+    "chrome://screenshots/skin/screenshots.css",
+  ];
+  for (let sheet of sheets) {
+    let styleSheetURI = Services.io.newURI(sheet);
+    styleSheetService.loadAndRegisterSheet(styleSheetURI,
+                                           styleSheetService.AUTHOR_SHEET);
   }
 }
