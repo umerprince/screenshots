@@ -71,7 +71,9 @@ exports.Page = class Page {
   render(model) {
     if (!model.staticLink) {
       linker.setGitRevision(model.gitRevision);
-      model.staticLink = linker.staticLink;
+      model.staticLink = linker.staticLink.bind(null, {
+        cdn: model.cdn
+      });
       model.staticLinkWithHost = linker.staticLinkWithHost.bind(null, {
         protocol: location.protocol.replace(/:$/, ""),
         headers: {
