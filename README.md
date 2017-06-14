@@ -1,5 +1,7 @@
 ## Firefox Screenshots
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/mozilla-services/screenshots.svg)](https://greenkeeper.io/)
+
 [![CircleCI Build Status](https://circleci.com/gh/mozilla-services/screenshots.svg?style=shield)](https://circleci.com/gh/mozilla-services/screenshots)
 [![Available on Test Pilot](https://img.shields.io/badge/available_on-Test_Pilot-0996F8.svg)](https://testpilot.firefox.com/experiments/page-shot)
 
